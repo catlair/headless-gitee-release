@@ -1,11 +1,27 @@
-name: 'Your name here'
+name: 'headless-gitee-release'
 description: 'Provide a description here'
-author: 'Your name or organization here'
+author: 'catlair'
 inputs:
-  milliseconds: # change this
+  username: # change this
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'gitee username'
+  password:
+    required: true
+    description: 'gitee password'
+  repo:
+    description: 'gitee repo name'
+  tag:
+    description: 'gitee tag name'
+  title:
+    description: 'gitee release title'
+  description:
+    description: 'gitee release description'
+  file:
+    description: 'gitee release files'
+  prerelease:
+    description: 'gitee release prerelease'
+    default: false
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

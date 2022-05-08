@@ -19,6 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: |
+          sudo sed -i "1inameserver 8.8.8.8" /etc/resolv.conf
       - uses: ./
         with:
-          milliseconds: 1000
+          username: '{{ secrets.USERNAME }}'
+          password: '{{ secrets.PASSWORD }}'
+          file: 'dist/licenses.txt'
