@@ -51,15 +51,21 @@ async function createRelease(page: Page): Promise<void> {
     }
     await page.type('#release_tag_version', tagVer, {delay: 100})
     await page.type('#release_title', input.title, {delay: 100})
-    await page.type('#release_description', input.description, {delay: 100})
+    await page.type('.md-input', input.description, {delay: 100})
     if (input.prerelease) {
       core.info('setting prerelease')
       await page.click('#release_prerelease')
     }
     await uploadFile(page)
+    await uploadFile(page)
+    core.debug('uploaded file')
+    await page.waitForSelector('#btn-submit-release')
+    const btn = await page.$('#btn-submit-release')
+    await page.waitForTimeout(4000)
+    core.debug('start submitting')
     await Promise.all([
       page.waitForNavigation(),
-      page.click('#btn-submit-release')
+      page.evaluate(sub => sub.click(), btn)
     ])
     core.info('created release')
   } catch (error) {

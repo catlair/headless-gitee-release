@@ -114,15 +114,21 @@ function createRelease(page) {
             }
             yield page.type('#release_tag_version', tagVer, { delay: 100 });
             yield page.type('#release_title', input_1.default.title, { delay: 100 });
-            yield page.type('#release_description', input_1.default.description, { delay: 100 });
+            yield page.type('.md-input', input_1.default.description, { delay: 100 });
             if (input_1.default.prerelease) {
                 core.info('setting prerelease');
                 yield page.click('#release_prerelease');
             }
             yield uploadFile(page);
+            yield uploadFile(page);
+            core.debug('uploaded file');
+            yield page.waitForSelector('#btn-submit-release');
+            const btn = yield page.$('#btn-submit-release');
+            yield page.waitForTimeout(4000);
+            core.debug('start submitting');
             yield Promise.all([
                 page.waitForNavigation(),
-                page.click('#btn-submit-release')
+                page.evaluate(sub => sub.click(), btn)
             ]);
             core.info('created release');
         }
