@@ -21,13 +21,14 @@ async function installBrowser(): Promise<string> {
 async function login(page: Page): Promise<boolean> {
   try {
     await page.goto('https://gitee.com/login')
+    await page.waitForTimeout(5000)
     core.info('navigated to gitee login page')
     await page.type('#user_login', input.username)
     await page.type('#user_password', input.password)
     core.debug('click login button')
     await showHtml(page)
     await Promise.all([
-      page.waitForNavigation(),
+      page.waitForNavigation({timeout: 60000}),
       page.evaluate(() => {
         document
           .querySelector<HTMLButtonElement>('.field input[type="submit"]')
@@ -49,6 +50,7 @@ async function login(page: Page): Promise<boolean> {
 async function createRelease(page: Page): Promise<void> {
   try {
     await page.goto(`https://gitee.com/${input.repo}/releases/new`)
+    await page.waitForTimeout(5000)
     core.info('navigated to gitee releases page')
     // 获取最新的版本号
     let tagVer = input.tag
@@ -58,22 +60,22 @@ async function createRelease(page: Page): Promise<void> {
         el ? el.innerHTML : ''
       )
     }
-    await page.type('#release_tag_version', tagVer, {delay: 100})
-    await page.type('#release_title', input.title, {delay: 100})
-    await page.type('.md-input', input.description, {delay: 100})
+    await page.type('#release_tag_version', tagVer, {delay: 1000})
+    await page.type('#release_title', input.title, {delay: 1000})
+    await page.type('.md-input', input.description, {delay: 1000})
     if (input.prerelease) {
       core.info('setting prerelease')
       await page.click('#release_prerelease')
     }
     await uploadFile(page)
-    await uploadFile(page)
+    await page.waitForTimeout(5000)
     core.debug('uploaded file')
     await page.waitForSelector('#btn-submit-release')
     const btn = await page.$('#btn-submit-release')
-    await page.waitForTimeout(4000)
+    await page.waitForTimeout(5000)
     core.debug('start submitting')
     await Promise.all([
-      page.waitForNavigation(),
+      page.waitForNavigation({timeout: 120000}),
       page.evaluate(sub => sub.click(), btn)
     ])
     core.info('created release')

@@ -86,13 +86,14 @@ function login(page) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             yield page.goto('https://gitee.com/login');
+            yield page.waitForTimeout(5000);
             core.info('navigated to gitee login page');
             yield page.type('#user_login', input_1.default.username);
             yield page.type('#user_password', input_1.default.password);
             core.debug('click login button');
             yield showHtml(page);
             yield Promise.all([
-                page.waitForNavigation(),
+                page.waitForNavigation({ timeout: 60000 }),
                 page.evaluate(() => {
                     var _a;
                     (_a = document
@@ -116,6 +117,7 @@ function createRelease(page) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             yield page.goto(`https://gitee.com/${input_1.default.repo}/releases/new`);
+            yield page.waitForTimeout(5000);
             core.info('navigated to gitee releases page');
             // 获取最新的版本号
             let tagVer = input_1.default.tag;
@@ -123,22 +125,22 @@ function createRelease(page) {
                 core.info('getting latest tag');
                 tagVer = yield page.$eval('#git-tags option', el => el ? el.innerHTML : '');
             }
-            yield page.type('#release_tag_version', tagVer, { delay: 100 });
-            yield page.type('#release_title', input_1.default.title, { delay: 100 });
-            yield page.type('.md-input', input_1.default.description, { delay: 100 });
+            yield page.type('#release_tag_version', tagVer, { delay: 1000 });
+            yield page.type('#release_title', input_1.default.title, { delay: 1000 });
+            yield page.type('.md-input', input_1.default.description, { delay: 1000 });
             if (input_1.default.prerelease) {
                 core.info('setting prerelease');
                 yield page.click('#release_prerelease');
             }
             yield uploadFile(page);
-            yield uploadFile(page);
+            yield page.waitForTimeout(5000);
             core.debug('uploaded file');
             yield page.waitForSelector('#btn-submit-release');
             const btn = yield page.$('#btn-submit-release');
-            yield page.waitForTimeout(4000);
+            yield page.waitForTimeout(5000);
             core.debug('start submitting');
             yield Promise.all([
-                page.waitForNavigation(),
+                page.waitForNavigation({ timeout: 120000 }),
                 page.evaluate(sub => sub.click(), btn)
             ]);
             core.info('created release');
