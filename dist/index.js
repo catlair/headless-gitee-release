@@ -67,6 +67,12 @@ const core = __importStar(__nccwpck_require__(2186));
 const input_1 = __importDefault(__nccwpck_require__(8657));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const puppeteer = __nccwpck_require__(9014);
+function showHtml(page) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const html = yield page.content();
+        core.info(html);
+    });
+}
 /** 安装浏览器 */
 function installBrowser() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -84,9 +90,14 @@ function login(page) {
             yield page.type('#user_login', input_1.default.username);
             yield page.type('#user_password', input_1.default.password);
             core.debug('click login button');
+            yield showHtml(page);
             yield Promise.all([
                 page.waitForNavigation(),
-                page.click('.field input[type="submit"]')
+                page.evaluate(() => {
+                    var _a;
+                    (_a = document
+                        .querySelector('.field input[type="submit"]')) === null || _a === void 0 ? void 0 : _a.click();
+                })
             ]);
             core.info('logged in');
             return true;

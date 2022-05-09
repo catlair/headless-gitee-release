@@ -4,6 +4,10 @@ import input from './input'
 import path from 'path'
 
 const puppeteer = require('puppeteer')
+async function showHtml(page: Page): Promise<void> {
+  const html = await page.content()
+  core.info(html)
+}
 
 /** 安装浏览器 */
 async function installBrowser(): Promise<string> {
@@ -21,9 +25,14 @@ async function login(page: Page): Promise<boolean> {
     await page.type('#user_login', input.username)
     await page.type('#user_password', input.password)
     core.debug('click login button')
+    await showHtml(page)
     await Promise.all([
       page.waitForNavigation(),
-      page.click('.field input[type="submit"]')
+      page.evaluate(() => {
+        document
+          .querySelector<HTMLButtonElement>('.field input[type="submit"]')
+          ?.click()
+      })
     ])
     core.info('logged in')
     return true
