@@ -5,8 +5,10 @@ import path from 'path'
 
 const puppeteer = require('puppeteer')
 async function showHtml(page: Page): Promise<void> {
+  core.startGroup('html')
   const html = await page.content()
-  core.info(html)
+  core.debug(html)
+  core.endGroup()
 }
 
 /** 安装浏览器 */
@@ -27,6 +29,7 @@ async function login(page: Page): Promise<boolean> {
     await page.type('#user_password', input.password)
     core.debug('click login button')
     await showHtml(page)
+    core.info(((await page.$('.field input[type="submit"]')) || '').toString())
     await Promise.all([
       page.waitForNavigation({timeout: 60000}),
       page.evaluate(() => {

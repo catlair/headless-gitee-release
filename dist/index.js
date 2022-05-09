@@ -69,8 +69,10 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const puppeteer = __nccwpck_require__(9014);
 function showHtml(page) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.startGroup('html');
         const html = yield page.content();
-        core.info(html);
+        core.debug(html);
+        core.endGroup();
     });
 }
 /** 安装浏览器 */
@@ -92,6 +94,7 @@ function login(page) {
             yield page.type('#user_password', input_1.default.password);
             core.debug('click login button');
             yield showHtml(page);
+            core.info(((yield page.$('.field input[type="submit"]')) || '').toString());
             yield Promise.all([
                 page.waitForNavigation({ timeout: 60000 }),
                 page.evaluate(() => {
